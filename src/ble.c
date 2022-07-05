@@ -232,19 +232,25 @@ static uint8_t notify_func(struct bt_conn *conn,
 				printk("%s Glucose:%u (%u/%u/%u %u:%u GMT %s)\n", dest, glucose, year, month, day, hour, minute,tz);
 
 				int err;
-
+				char addr[BT_ADDR_LE_STR_LEN];
+				
 				err = bt_gatt_unsubscribe(default_conn, &subscribe_params);
 				if (err)
 				{
-					printk("unsunscribe error %d\n", err);
+					printk("Unsubscribe Error: %d [%s].\n", err, addr);
 				}
 
 				err = bt_conn_disconnect(default_conn, BT_HCI_ERR_REMOTE_USER_TERM_CONN);
-				if (err) {
-					char addr[BT_ADDR_LE_STR_LEN];
-					bt_addr_le_to_str(bt_conn_get_dst(default_conn), addr, sizeof(addr));
-					printk("Failed disconnection %s.\n", addr);
+				if (err)
+				{
+					printk("Disconnection Error: %d [%s].\n", err, addr);
 				}
+
+				err = bt_unpair(BT_ID_DEFAULT, bt_conn_get_dst(default_conn));
+				if (err)
+				{
+					printk("Unpair Error: %d [%s].\n", err, addr);
+				}		
 			
 			
 			}
