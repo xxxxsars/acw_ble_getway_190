@@ -11,7 +11,7 @@
 #include <bluetooth/uuid.h>
 #include <bluetooth/gatt_dm.h>
 
-
+#include <bluetooth/hci_vs.h>
 #include <dk_buttons_and_leds.h>
 #include <sys/byteorder.h>
 
@@ -686,10 +686,23 @@ static void ble_ready(int err)
 		return;
 	}
 
-	
-	
-	
 	start_scan();
+
+	//Get device name
+	char *device_name = bt_get_name();
+	printk("Device Name:%s\n",device_name);
+
+	
+	//Get devie static address
+	struct bt_hci_vs_static_addr addr[CONFIG_BT_ID_MAX];
+
+	bt_read_static_addr(addr, CONFIG_BT_ID_MAX);
+	char addr_str[BT_ADDR_LE_STR_LEN];
+	bt_addr_to_str(&addr->bdaddr, addr_str, sizeof(addr_str));
+	printk(" Address:%s\n",addr_str);
+
+	
+
 }
 
 void ble_init(void)
@@ -702,7 +715,6 @@ void ble_init(void)
 		printk("Bluetooth init failed (err %d)\n", err);
 		return;
 	}
-
 
 
 }
