@@ -690,7 +690,7 @@ static void ble_ready(int err)
 
 	//Get device name
 	char *device_name = bt_get_name();
-	printk("Device Name:%s\n",device_name);
+	printk("Get Device Name:%s\n",device_name);
 
 	
 	//Get devie static address
@@ -699,7 +699,7 @@ static void ble_ready(int err)
 	bt_read_static_addr(addr, CONFIG_BT_ID_MAX);
 	char addr_str[BT_ADDR_LE_STR_LEN];
 	bt_addr_to_str(&addr->bdaddr, addr_str, sizeof(addr_str));
-	printk(" Address:%s\n",addr_str);
+	printk("Get original Address:%s\n",addr_str);
 
 	
 
@@ -714,6 +714,24 @@ void ble_init(void)
 	if (err) {
 		printk("Bluetooth init failed (err %d)\n", err);
 		return;
+	}
+
+	//Greate static address
+	char set_addr_str[BT_ADDR_LE_STR_LEN];
+	bt_addr_le_t  set_addr;
+	err = bt_addr_le_create_static(&set_addr);	
+	if (err){
+		printk("Create addr failed:%d\n",err);
+	}
+
+	bt_addr_to_str(&set_addr.a, set_addr_str, sizeof(set_addr_str));
+	printk("Set Address:%s\n",set_addr_str);
+
+
+	//Set device static address
+	err = bt_id_create(&set_addr,NULL);
+	if (err){
+		printk("Set Address Failed:%d\n",err);
 	}
 
 
